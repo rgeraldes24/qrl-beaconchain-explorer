@@ -34,15 +34,7 @@ func GetNodeJob(id string) (*types.NodeJob, error) {
 
 func GetNodeJobValidatorInfos(job *types.NodeJob) ([]types.NodeJobValidatorInfo, error) {
 	indicesArr := []uint64{}
-	if job.Type == types.DilithiumToExecutionChangesNodeJobType {
-		// jobData, ok := job.GetDilithiumToExecutionChangesNodeJobData()
-		// if !ok {
-		// 	return nil, fmt.Errorf("invalid dilithium to execution job-data")
-		// }
-		// for _, op := range jobData {
-		// 	indicesArr = append(indicesArr, uint64(op.Message.ValidatorIndex))
-		// }
-	} else if job.Type == types.VoluntaryExitsNodeJobType {
+	if job.Type == types.VoluntaryExitsNodeJobType {
 		jobData, ok := job.GetVoluntaryExitsNodeJobData()
 		if !ok {
 			return nil, fmt.Errorf("invalid voluntary exit job-data")
@@ -69,9 +61,6 @@ func GetNodeJobValidatorInfos(job *types.NodeJob) ([]types.NodeJobValidatorInfo,
 	}
 	for i, info := range dbValis {
 		status := jobStatus
-		if strings.HasPrefix(info.Status, "exit") && job.Type == types.DilithiumToExecutionChangesNodeJobType {
-			status = fmt.Sprintf("%s (Validator Status: Exited)", status)
-		}
 		dbValis[i].Status = status
 	}
 	return dbValis, nil
@@ -85,8 +74,6 @@ func CreateNodeJob(data []byte) (*types.NodeJob, error) {
 	switch j.Type {
 	default:
 		return nil, fmt.Errorf("unknown job-type %v", j.Type)
-	case types.DilithiumToExecutionChangesNodeJobType:
-		return CreateDilithiumToExecutionChangesNodeJob(j)
 	case types.VoluntaryExitsNodeJobType:
 		return CreateVoluntaryExitNodeJob(j)
 	}
@@ -94,10 +81,6 @@ func CreateNodeJob(data []byte) (*types.NodeJob, error) {
 
 func UpdateNodeJobs() error {
 	var err error
-	err = UpdateDilithiumToExecutionChangesNodeJobs()
-	if err != nil {
-		return fmt.Errorf("error updating dilithium-to-exec-job: %w", err)
-	}
 	err = UpdateVoluntaryExitNodeJobs()
 	if err != nil {
 		return fmt.Errorf("error updating voluntary-exit-job: %w", err)
@@ -107,228 +90,10 @@ func UpdateNodeJobs() error {
 
 func SubmitNodeJobs() error {
 	var err error
-	err = SubmitDilithiumToExecutionChangesNodeJobs()
-	if err != nil {
-		return err
-	}
 	err = SubmitVoluntaryExitNodeJobs()
 	if err != nil {
 		return err
 	}
-	return nil
-}
-
-func CreateDilithiumToExecutionChangesNodeJob(nj *types.NodeJob) (*types.NodeJob, error) {
-	if len(nj.RawData) > 1e6 {
-		return nil, types.CreateNodeJobUserError{Message: "data-size exceeds maximum of 1MB"}
-	}
-	nj.ID = uuid.New().String()
-	nj.Status = types.PendingNodeJobStatus
-
-	// opsByIndex := map[uint64]*capella.SignedDilithiumToExecutionChange{}
-	opsToCheck := map[uint64]bool{}
-	indicesArr := []uint64{}
-	// d, ok := nj.GetDilithiumToExecutionChangesNodeJobData()
-	// if !ok {
-	// 	return nil, types.CreateNodeJobUserError{Message: "invalid data"}
-	// }
-
-	// for _, op := range d {
-	// 	err := utils.VerifyDilithiumToExecutionChangeSignature(op)
-	// 	if err != nil {
-	// 		return nil, types.CreateNodeJobUserError{Message: fmt.Sprintf("can not verify signature: %v", err)}
-	// 	}
-	// 	// _, exists := opsByIndex[uint64(op.Message.ValidatorIndex)]
-	// 	exists := false
-	// 	if exists {
-	// 		return nil, nil
-	// 		// return nil, types.CreateNodeJobUserError{Message: fmt.Sprintf("multiple entries for the same validator: %v", uint64(op.Message.ValidatorIndex))}
-	// 	}
-	// 	// indicesArr = append(indicesArr, uint64(op.Message.ValidatorIndex))
-	// 	// opsByIndex[uint64(op.Message.ValidatorIndex)] = op
-	// 	// opsToCheck[uint64(op.Message.ValidatorIndex)] = true
-	// }
-
-	dbValis := []struct {
-		Index                 uint64 `db:"validatorindex"`
-		Pubkey                []byte `db:"pubkey"`
-		WithdrawalCredentials []byte `db:"withdrawalcredentials"`
-	}{}
-	err := WriterDb.Select(&dbValis, `select validatorindex, pubkey, withdrawalcredentials from validators where validatorindex = any($1)`, pq.Array(indicesArr))
-	if err != nil {
-		return nil, err
-	}
-
-	for _, v := range dbValis {
-		// op := opsByIndex[v.Index]
-		// withdrawalCredentials := ethutil.SHA256(op.Message.FromDilithiumPubkey[:])
-		// withdrawalCredentials[0] = byte(0) // DILITHIUM_WITHDRAWAL_PREFIX
-		// if !bytes.Equal(withdrawalCredentials, v.WithdrawalCredentials) {
-		// 	return nil, types.CreateNodeJobUserError{Message: fmt.Sprintf("fromDilithiumPubkey do not match withdrawalCredentials for validator with index %v", v.Index)}
-		// }
-		// if v.WithdrawalCredentials[0] != 0 {
-		// 	return nil, types.CreateNodeJobUserError{Message: fmt.Sprintf("withdrawalCredentials[0] != 0 for validator with index %v", v.Index)}
-		// }
-		delete(opsToCheck, v.Index)
-	}
-	if len(opsToCheck) > 0 {
-		return nil, fmt.Errorf("could not check all validators")
-	}
-
-	tx, err := WriterDb.Beginx()
-	if err != nil {
-		return nil, fmt.Errorf("error starting db transactions: %w", err)
-	}
-	defer tx.Rollback()
-
-	batchSize := 1000
-	for b := 0; b < len(indicesArr); b += batchSize {
-		start := b
-		end := b + batchSize
-		if len(indicesArr) < end {
-			end = len(indicesArr)
-		}
-		size := end - start
-		valueStrs := make([]string, 0, size)
-		valueArgs := make([]interface{}, 0, size+1)
-		valueArgs = append(valueArgs, nj.ID)
-		for i, idx := range indicesArr[start:end] {
-			valueStrs = append(valueStrs, fmt.Sprintf("($1, $%d)", i+2))
-			valueArgs = append(valueArgs, idx)
-		}
-		stmt := fmt.Sprintf(`insert into node_jobs_dilithium_changes_validators (node_job_id, validatorindex) values %s on conflict do nothing`, strings.Join(valueStrs, ","))
-		res, err := tx.Exec(stmt, valueArgs...)
-		if err != nil {
-			return nil, fmt.Errorf("error inserting into node_jobs_dilithium_changes_validators: %w", err)
-		}
-		rows, err := res.RowsAffected()
-		if err != nil {
-			return nil, fmt.Errorf("error getting rowsAffected: %w", err)
-		}
-		if rows != int64(size) {
-			return nil, types.CreateNodeJobUserError{Message: "there is already a job for some of the validators"}
-		}
-	}
-
-	_, err = tx.Exec(`insert into node_jobs (id, type, status, data, created_time) values ($1, $2, $3, $4, now())`, nj.ID, nj.Type, nj.Status, nj.RawData)
-	if err != nil {
-		return nil, fmt.Errorf("error inserting into node_jobs: %w", err)
-	}
-
-	err = tx.Commit()
-	if err != nil {
-		return nil, fmt.Errorf("error commiting db-tx: %w", err)
-	}
-
-	logrus.WithFields(logrus.Fields{"id": nj.ID, "type": nj.Type, "validators": len(indicesArr)}).Infof("created node_job")
-	return nj, nil
-}
-
-func UpdateDilithiumToExecutionChangesNodeJobs() error {
-	jobs := []*types.NodeJob{}
-	err := WriterDb.Select(&jobs, `select id, type, status, created_time, submitted_to_node_time, completed_time, data from node_jobs where type = $1 and status = $2`, types.DilithiumToExecutionChangesNodeJobType, types.SubmittedToNodeNodeJobStatus)
-	if err != nil {
-		return err
-	}
-	for _, job := range jobs {
-		err := job.ParseData()
-		if err != nil {
-			return err
-		}
-		err = UpdateDilithiumToExecutionChangesNodeJob(job)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func UpdateDilithiumToExecutionChangesNodeJob(job *types.NodeJob) error {
-	// jobData, ok := job.GetDilithiumToExecutionChangesNodeJobData()
-	// if !ok {
-	// 	return fmt.Errorf("invalid job-data")
-	// }
-	toCheck := map[uint64]bool{}
-	indicesArr := []uint64{}
-	// for _, op := range jobData {
-	// 	indicesArr = append(indicesArr, uint64(op.Message.ValidatorIndex))
-	// 	toCheck[uint64(op.Message.ValidatorIndex)] = true
-	// }
-	dbValis := []struct {
-		Index                 uint64 `db:"validatorindex"`
-		WithdrawalCredentials []byte `db:"withdrawalcredentials"`
-	}{}
-	logrus.WithFields(logrus.Fields{"id": job.ID, "type": job.Type, "status": job.Status, "validators": len(indicesArr)}).Infof("checking node_job")
-	err := WriterDb.Select(&dbValis, `select validatorindex, withdrawalcredentials from validators where validatorindex = any($1)`, pq.Array(indicesArr))
-	if err != nil {
-		return err
-	}
-
-	for _, v := range dbValis {
-		if v.WithdrawalCredentials[0] == 1 {
-			delete(toCheck, v.Index)
-		} else {
-			// not all valis have been updated yet
-			return nil
-		}
-		if len(toCheck) == 0 {
-			// all validatrors have been completed
-			job.CompletedTime.Time = time.Now()
-			job.CompletedTime.Valid = true
-			_, err = WriterDb.Exec(`update node_jobs set status = $1, completed_time = $2 where id = $3`, types.CompletedNodeJobStatus, job.CompletedTime.Time, job.ID)
-			if err != nil {
-				return err
-			}
-			logrus.WithFields(logrus.Fields{"id": job.ID, "type": job.Type, "status": types.CompletedNodeJobStatus, "validators": len(indicesArr)}).Infof("updated node_job")
-		}
-	}
-	return nil
-}
-
-func SubmitDilithiumToExecutionChangesNodeJobs() error {
-	maxSubmittedJobs := 1000
-	jobs := []*types.NodeJob{}
-	err := WriterDb.Select(&jobs, `select id, type, status, created_time, submitted_to_node_time, completed_time, data from node_jobs where type = $1 and status = $2 order by created_time limit $4-(select count(*) from node_jobs where type = $1 and status = $3)`, types.DilithiumToExecutionChangesNodeJobType, types.PendingNodeJobStatus, types.SubmittedToNodeNodeJobStatus, maxSubmittedJobs)
-	if err != nil {
-		return err
-	}
-	for _, job := range jobs {
-		err = job.ParseData()
-		if err != nil {
-			return err
-		}
-		err = SubmitDilithiumToExecutionChangesNodeJob(job)
-		if err != nil {
-			return fmt.Errorf("error calling SubmitDilithiumToExecutionChangesNodeJob for job %v: %w", job.ID, err)
-		}
-	}
-	return nil
-}
-
-func SubmitDilithiumToExecutionChangesNodeJob(job *types.NodeJob) error {
-	client := &http.Client{Timeout: time.Second * 10}
-	url := fmt.Sprintf("%s/qrl/v1/beacon/pool/dilithium_to_execution_changes", utils.Config.NodeJobsProcessor.ClEndpoint)
-	resp, err := client.Post(url, "application/json", bytes.NewReader(job.RawData))
-	if err != nil {
-		return err
-	}
-	jobStatus := types.SubmittedToNodeNodeJobStatus
-	if resp.StatusCode != 200 {
-		d, _ := io.ReadAll(resp.Body)
-		if len(d) > 1000 {
-			d = d[:1000]
-		}
-		jobStatus = types.FailedNodeJobStatus
-		logrus.WithFields(logrus.Fields{"data": string(d), "status": resp.Status, "jobID": job.ID}).Warnf("failed submitting a job")
-	}
-	job.Status = jobStatus
-	job.SubmittedToNodeTime.Time = time.Now()
-	job.SubmittedToNodeTime.Valid = true
-	_, err = WriterDb.Exec(`update node_jobs set status = $1, submitted_to_node_time = $2 where id = $3`, job.Status, job.SubmittedToNodeTime.Time, job.ID)
-	if err != nil {
-		return err
-	}
-	logrus.WithFields(logrus.Fields{"id": job.ID, "type": job.Type, "status": jobStatus}).Infof("submitted node_job")
 	return nil
 }
 

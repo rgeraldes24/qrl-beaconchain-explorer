@@ -454,7 +454,6 @@ func ReadConfig(cfg *types.Config, path string) error {
 			MaxExtraDataBytes:                mustParseUint(jr.Data.MaxExtraDataBytes),
 			MaxWithdrawalsPerPayload:         mustParseUint(jr.Data.MaxWithdrawalsPerPayload),
 			MaxValidatorsPerWithdrawalSweep:  mustParseUint(jr.Data.MaxValidatorsPerWithdrawalsSweep),
-			MaxDilithiumToExecutionChange:    mustParseUint(jr.Data.MaxDilithiumToExecutionChanges),
 		}
 
 		cfg.Chain.ClConfig = chainCfg
@@ -523,9 +522,6 @@ func ReadConfig(cfg *types.Config, path string) error {
 	}
 
 	// TODO(now.youtrack.cloud/issue/TZB-2)
-	// if cfg.Chain.DomainDilithiumToExecutionChange == "" {
-	// 	cfg.Chain.DomainDilithiumToExecutionChange = "0x0A000000"
-	// }
 	// if cfg.Chain.DomainVoluntaryExit == "" {
 	// 	cfg.Chain.DomainVoluntaryExit = "0x04000000"
 	// }
@@ -624,7 +620,6 @@ func IsApiRequest(r *http.Request) bool {
 }
 
 var qrlAddressRE = regexp.MustCompile("^Q[0-9a-fA-F]{40}$")
-var withdrawalCredentialsRE = regexp.MustCompile("^(0x)?00[0-9a-fA-F]{62}$")
 var withdrawalCredentialsAddressRE = regexp.MustCompile("^(0x)?" + BeginningOfSetWithdrawalCredentials + "[0-9a-fA-F]{40}$")
 var txHashRE = regexp.MustCompile("^(0x)?[0-9a-fA-F]{64}$")
 var zeroHashRE = regexp.MustCompile("^(0x)?0+$")
@@ -653,7 +648,7 @@ func IsHash(s string) bool {
 
 // IsValidWithdrawalCredentials verifies whether a string represents valid withdrawal credentials.
 func IsValidWithdrawalCredentials(s string) bool {
-	return withdrawalCredentialsRE.MatchString(s) || withdrawalCredentialsAddressRE.MatchString(s)
+	return withdrawalCredentialsAddressRE.MatchString(s)
 }
 
 // Glob walks through a directory and returns files with a given extension

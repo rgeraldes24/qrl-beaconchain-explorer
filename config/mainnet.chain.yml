@@ -226,11 +226,6 @@ MAX_SAMPLE_PRICE: 8589934592
 # 2**3 (= 8) Shor
 MIN_SAMPLE_PRICE: 8
 
-# Max operations per block
-# ---------------------------------------------------------------
-# 2**4 (= 16)
-MAX_DILITHIUM_TO_EXECUTION_CHANGES: 16
-
 # Execution
 # ---------------------------------------------------------------
 # [customized] 2**2 (= 4)

@@ -41,7 +41,6 @@ type Config struct {
 		GenesisTimestamp      uint64 `yaml:"genesisTimestamp" envconfig:"CHAIN_GENESIS_TIMESTAMP"`
 		GenesisValidatorsRoot string `yaml:"genesisValidatorsRoot" envconfig:"CHAIN_GENESIS_VALIDATORS_ROOT"`
 		// TODO(now.youtrack.cloud/issue/TZB-2)
-		// DomainDilithiumToExecutionChange string `yaml:"domainDilithiumToExecutionChange" envconfig:"CHAIN_DOMAIN_DILITHIUM_TO_EXECUTION_CHANGE"`
 		// DomainVoluntaryExit              string `yaml:"domainVoluntaryExit" envconfig:"CHAIN_DOMAIN_VOLUNTARY_EXIT"`
 		ClConfigPath string `yaml:"clConfigPath" envconfig:"CHAIN_CL_CONFIG_PATH"`
 		ClConfig     ClChainConfig
@@ -221,13 +220,11 @@ type ConfigJsonResponse struct {
 		MaxTransactionsPerPayload            string `json:"MAX_TRANSACTIONS_PER_PAYLOAD"`
 		BytesPerLogsBloom                    string `json:"BYTES_PER_LOGS_BLOOM"`
 		MaxExtraDataBytes                    string `json:"MAX_EXTRA_DATA_BYTES"`
-		MaxDilithiumToExecutionChanges       string `json:"MAX_DILITHIUM_TO_EXECUTION_CHANGES"`
 		MaxWithdrawalsPerPayload             string `json:"MAX_WITHDRAWALS_PER_PAYLOAD"`
 		MaxValidatorsPerWithdrawalsSweep     string `json:"MAX_VALIDATORS_PER_WITHDRAWALS_SWEEP"`
 		DomainAggregateAndProof              string `json:"DOMAIN_AGGREGATE_AND_PROOF"`
 		TargetAggregatorsPerSyncSubcommittee string `json:"TARGET_AGGREGATORS_PER_SYNC_SUBCOMMITTEE"`
 		SyncCommitteeSubnetCount             string `json:"SYNC_COMMITTEE_SUBNET_COUNT"`
-		DilithiumWithdrawalPrefix            string `json:"DILITHIUM_WITHDRAWAL_PREFIX"`
 		DomainRandao                         string `json:"DOMAIN_RANDAO"`
 		DomainVoluntaryExit                  string `json:"DOMAIN_VOLUNTARY_EXIT"`
 		DomainSyncCommitteeSelectionProof    string `json:"DOMAIN_SYNC_COMMITTEE_SELECTION_PROOF"`

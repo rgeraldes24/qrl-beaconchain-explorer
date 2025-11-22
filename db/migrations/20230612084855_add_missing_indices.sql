@@ -10,9 +10,6 @@ SELECT 'create index for impact level 4 or higher';
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_validators_activationepoch_status ON public.validators USING btree (activationepoch, status);
 -- +goose StatementEnd
 -- +goose StatementBegin
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_blocks_dilithium_change_block_root_validatorindex ON public.blocks_dilithium_change USING btree (block_root, validatorindex);
--- +goose StatementEnd
--- +goose StatementBegin
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_execution_deposits_from_address_publickey ON public.execution_deposits USING btree (from_address, publickey);
 -- +goose StatementEnd
 -- +goose StatementBegin
@@ -93,9 +90,6 @@ SELECT 'drop index for impact level 4 or higher';
 -- +goose StatementEnd
 -- +goose StatementBegin
 DROP INDEX CONCURRENTLY idx_validators_activationepoch_status;
--- +goose StatementEnd
--- +goose StatementBegin
-DROP INDEX CONCURRENTLY idx_blocks_dilithium_change_block_root_validatorindex;
 -- +goose StatementEnd
 -- +goose StatementBegin
 DROP INDEX CONCURRENTLY idx_execution_deposits_from_address_publickey;

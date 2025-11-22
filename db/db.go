@@ -43,7 +43,6 @@ var farFutureEpoch = uint64(18446744073709551615)
 var maxSqlNumber = uint64(9223372036854775807)
 
 const WithdrawalsQueryLimit = 10000
-const DilithiumChangeQueryLimit = 10000
 const MaxSqlInteger = 2147483647
 
 const DefaultInfScrollRows = 25
@@ -1044,15 +1043,6 @@ func saveBlocks(blocks map[uint64]map[string]*types.Block, tx *sqlx.Tx, forceSlo
 	}
 	defer stmtWithdrawals.Close()
 
-	stmtDilithiumChange, err := tx.Prepare(`
-		INSERT INTO blocks_dilithium_change (block_slot, block_root, validatorindex, signature, pubkey, address)
-		VALUES ($1, $2, $3, $4, $5, $6)
-		ON CONFLICT (block_slot, block_root, validatorindex) DO NOTHING`)
-	if err != nil {
-		return err
-	}
-	defer stmtDilithiumChange.Close()
-
 	stmtProposerSlashing, err := tx.Prepare(`
 		INSERT INTO blocks_proposerslashings (block_slot, block_index, block_root, proposerindex, header1_slot, header1_parentroot, header1_stateroot, header1_bodyroot, header1_signature, header2_slot, header2_parentroot, header2_stateroot, header2_bodyroot, header2_signature)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
@@ -1269,15 +1259,6 @@ func saveBlocks(blocks map[uint64]map[string]*types.Block, tx *sqlx.Tx, forceSlo
 				}
 			}
 			blockLog.WithField("duration", time.Since(t)).Tracef("stmtProposerSlashing")
-			t = time.Now()
-			logger.Tracef("writing dilithium change data")
-			for i, dilithium := range b.SignedDilithiumToExecutionChange {
-				_, err := stmtDilithiumChange.Exec(b.Slot, b.BlockRoot, dilithium.Message.Validatorindex, dilithium.Signature, dilithium.Message.DilithiumPubkey, dilithium.Message.Address)
-				if err != nil {
-					return fmt.Errorf("error executing stmtDilithiumChange for block %v index %v: %w", b.Slot, i, err)
-				}
-			}
-			blockLog.WithField("duration", time.Since(t)).Tracef("stmtDilithiumChange")
 			t = time.Now()
 
 			for i, as := range b.AttesterSlashings {
@@ -1904,16 +1885,6 @@ func GetTotalAmountDeposited() (uint64, error) {
 	return total, err
 }
 
-func GetDilithiumChangeCount() (uint64, error) {
-	var total uint64
-	err := ReaderDb.Get(&total, `
-	SELECT 
-		COALESCE(count(*), 0) as count
-	FROM blocks_dilithium_change dilithium
-	INNER JOIN blocks b ON b.blockroot = dilithium.block_root AND b.status = '1'`)
-	return total, err
-}
-
 func GetEpochWithdrawalsTotal(epoch uint64) (total uint64, err error) {
 	err = ReaderDb.Get(&total, `
 	SELECT 
@@ -2278,172 +2249,6 @@ func GetExplorerConfigurations() ([]*types.ExplorerConfig, error) {
 	return configs, nil
 }
 
-func GetTotalDilithiumChanges() (uint64, error) {
-	var count uint64
-	err := ReaderDb.Get(&count, `
-		SELECT count(*) FROM blocks_dilithium_change`)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return 0, nil
-		}
-		return 0, fmt.Errorf("error getting total blocks_dilithium_change: %w", err)
-	}
-
-	return count, nil
-}
-
-func GetDilithiumChangesCountForQuery(query string) (uint64, error) {
-	count := uint64(0)
-
-	dilithiumQuery := `
-		SELECT COUNT(*) FROM (
-			SELECT b.slot
-			FROM blocks_dilithium_change dilithium
-			INNER JOIN blocks b ON dilithium.block_root = b.blockroot AND b.status = '1'
-			%s
-			LIMIT %d
-		) a
-		`
-
-	trimmedQuery := strings.ToLower(strings.TrimPrefix(query, "0x"))
-	var err error = nil
-
-	if utils.IsHash(query) {
-		searchQuery := `WHERE dilithium.pubkey = $1`
-		pubkey, decErr := hex.DecodeString(trimmedQuery)
-		if decErr != nil {
-			return 0, decErr
-		}
-		err = ReaderDb.Get(&count, fmt.Sprintf(dilithiumQuery, searchQuery, DilithiumChangeQueryLimit),
-			pubkey)
-	} else if uiQuery, parseErr := strconv.ParseUint(query, 10, 64); parseErr == nil {
-		// Check whether the query can be used for a validator, slot or epoch search
-		searchQuery := `
-			WHERE dilithium.validatorindex = $1			
-				OR dilithium.block_slot = $1
-				OR dilithium.block_slot BETWEEN $1*$2 AND ($1+1)*$2-1`
-		err = ReaderDb.Get(&count, fmt.Sprintf(dilithiumQuery, searchQuery, DilithiumChangeQueryLimit),
-			uiQuery, utils.Config.Chain.ClConfig.SlotsPerEpoch)
-	}
-	if err != nil {
-		return 0, err
-	}
-
-	return count, nil
-}
-
-func GetDilithiumChanges(query string, length, start uint64, orderBy, orderDir string) ([]*types.DilithiumChange, error) {
-	dilithiumChange := []*types.DilithiumChange{}
-
-	if orderDir != "desc" && orderDir != "asc" {
-		orderDir = "desc"
-	}
-	columns := []string{"block_slot", "validatorindex"}
-	hasColumn := false
-	for _, column := range columns {
-		if orderBy == column {
-			hasColumn = true
-			break
-		}
-	}
-	if !hasColumn {
-		orderBy = "block_slot"
-	}
-
-	dilithiumQuery := `
-		SELECT 
-			dilithium.block_slot as slot,
-			dilithium.validatorindex,
-			dilithium.signature,
-			dilithium.pubkey,
-			dilithium.address
-		FROM blocks_dilithium_change dilithium
-		INNER JOIN blocks b ON dilithium.block_root = b.blockroot AND b.status = '1'
-		%s
-		ORDER BY dilithium.%s %s
-		LIMIT $1
-		OFFSET $2`
-
-	trimmedQuery := strings.ToLower(strings.TrimPrefix(query, "0x"))
-	var err error = nil
-
-	if trimmedQuery != "" {
-		if utils.IsHash(query) {
-			searchQuery := `WHERE dilithium.pubkey = $3`
-			pubkey, decErr := hex.DecodeString(trimmedQuery)
-			if decErr != nil {
-				return nil, decErr
-			}
-			err = ReaderDb.Select(&dilithiumChange, fmt.Sprintf(dilithiumQuery, searchQuery, orderBy, orderDir),
-				length, start, pubkey)
-		} else if uiQuery, parseErr := strconv.ParseUint(query, 10, 64); parseErr == nil {
-			// Check whether the query can be used for a validator, slot or epoch search
-			searchQuery := `
-				WHERE dilithium.validatorindex = $3			
-					OR dilithium.block_slot = $3
-					OR dilithium.block_slot BETWEEN $3*$4 AND ($3+1)*$4-1`
-			err = ReaderDb.Select(&dilithiumChange, fmt.Sprintf(dilithiumQuery, searchQuery, orderBy, orderDir),
-				length, start, uiQuery, utils.Config.Chain.ClConfig.SlotsPerEpoch)
-		}
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		err := ReaderDb.Select(&dilithiumChange, fmt.Sprintf(dilithiumQuery, "", orderBy, orderDir), length, start)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return dilithiumChange, nil
-}
-
-func GetSlotDilithiumChange(slot uint64) ([]*types.DilithiumChange, error) {
-	var change []*types.DilithiumChange
-
-	err := ReaderDb.Select(&change, `
-	SELECT 
-		dilithium.validatorindex, 
-		dilithium.signature, 
-		dilithium.pubkey, 
-		dilithium.address 
-	FROM blocks_dilithium_change dilithium 
-	INNER JOIN blocks b ON b.blockroot = dilithium.block_root AND b.status = '1'
-	WHERE block_slot = $1
-	ORDER BY dilithium.validatorindex`, slot)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return change, nil
-		}
-		return nil, fmt.Errorf("error getting slot blocks_dilithium_change: %w", err)
-	}
-
-	return change, nil
-}
-
-func GetValidatorDilithiumChange(validatorindex uint64) (*types.DilithiumChange, error) {
-	change := &types.DilithiumChange{}
-
-	err := ReaderDb.Get(change, `
-	SELECT 
-		dilithium.block_slot as slot, 
-		dilithium.signature, 
-		dilithium.pubkey, 
-		dilithium.address 
-	FROM blocks_dilithium_change dilithium
-	INNER JOIN blocks b ON b.blockroot = dilithium.block_root AND b.status = '1'
-	WHERE validatorindex = $1 
-	ORDER BY dilithium.block_slot`, validatorindex)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
-		return nil, fmt.Errorf("error getting validator blocks_dilithium_change: %w", err)
-	}
-
-	return change, nil
-}
-
 func GetWithdrawableValidatorCount(epoch uint64) (uint64, error) {
 	var count uint64
 	err := ReaderDb.Get(&count, `
@@ -2462,26 +2267,6 @@ func GetWithdrawableValidatorCount(epoch uint64) (uint64, error) {
 	ON stats.validatorindex = validators.validatorindex
 	WHERE 
 		validators.withdrawalcredentials LIKE '\x01' || '%'::bytea AND ((stats.end_effective_balance = $1 AND stats.end_balance > $1) OR (validators.withdrawableepoch <= $2 AND stats.end_balance > 0));`, utils.Config.Chain.ClConfig.MaxEffectiveBalance, epoch)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return 0, nil
-		}
-		return 0, fmt.Errorf("error getting withdrawable validator count: %w", err)
-	}
-
-	return count, nil
-}
-
-func GetPendingDilithiumChangeValidatorCount() (uint64, error) {
-	var count uint64
-
-	err := ReaderDb.Get(&count, `
-	SELECT 
-		count(*) 
-	FROM 
-		validators 
-	WHERE 
-		withdrawalcredentials LIKE '\x00' || '%'::bytea`)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return 0, nil

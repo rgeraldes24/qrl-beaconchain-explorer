@@ -132,8 +132,6 @@ func BroadcastStatus(w http.ResponseWriter, r *http.Request) {
 func FormatNodeJobType(nodeJobType types.NodeJobType) string {
 	label := "Unknown"
 	switch nodeJobType {
-	case types.DilithiumToExecutionChangesNodeJobType:
-		label = "Set withdrawal address"
 	case types.VoluntaryExitsNodeJobType:
 		label = "Voluntary exit"
 	}
@@ -143,8 +141,6 @@ func FormatNodeJobType(nodeJobType types.NodeJobType) string {
 func FormatNodeJobTitle(nodeJobType types.NodeJobType) string {
 	label := "Transaction"
 	switch nodeJobType {
-	case types.DilithiumToExecutionChangesNodeJobType:
-		label = "Withdrawal Credentials Change Request Job"
 	case types.VoluntaryExitsNodeJobType:
 		label = "Voluntary Exit Request Job"
 	}

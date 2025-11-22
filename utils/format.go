@@ -29,7 +29,7 @@ import (
 )
 
 const CalculatingHint = `Calculating…`
-const BeginningOfSetWithdrawalCredentials = "010000000000000000000000"
+const BeginningOfSetWithdrawalCredentials = "000000000000000000000000"
 
 func FormatMessageToHtml(message string) template.HTML {
 	message = fmt.Sprint(strings.Replace(message, "Error: ", "", 1))
@@ -617,7 +617,7 @@ func WithdrawalCredentialsToAddress(credentials []byte) ([]byte, error) {
 func AddressToWithdrawalCredentials(address []byte) ([]byte, error) {
 	if IsAddress(fmt.Sprintf("Q%#x", address)) {
 		credentials := make([]byte, 12, 32)
-		credentials[0] = 0x01
+		credentials[0] = 0x00
 		credentials = append(credentials, address...)
 		return credentials, nil
 	}

@@ -513,10 +513,10 @@ github.com/prysmaticlabs/protoc-gen-go-cast v0.0.0-20230228205207-28762a7b9294 h
 github.com/prysmaticlabs/protoc-gen-go-cast v0.0.0-20230228205207-28762a7b9294/go.mod h1:ZVEbRdnMkGhp/pu35zq4SXxtvUwWK0J1MATtekZpH2Y=
 github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=
 github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
-github.com/rgeraldes24/go-zond v0.0.0-20250901090932-5b28406187a1 h1:PfQCCl4VUvOpG9NX2Q5LgePiR6JvP1h7//Xsh7C5eWQ=
-github.com/rgeraldes24/go-zond v0.0.0-20250901090932-5b28406187a1/go.mod h1:7LdYdNTiPW2m/pHqlA+4+66RSyMPCCknFcP8UMdcoGE=
-github.com/rgeraldes24/qrysm v0.0.0-20250902073130-a7e6444b5b66 h1:CXZb1BuZyqnb4NhoJ2qobNnymmBDCNzTNnIcBpWIhZ0=
-github.com/rgeraldes24/qrysm v0.0.0-20250902073130-a7e6444b5b66/go.mod h1:cu8TeqId4tBvlVwj5B2ZfrLSW0TkANjjpIaPtUIxW1I=
+github.com/rgeraldes24/go-zond v0.0.0-20251114154221-6a5b08a7585f h1:VnktGX059jLtJ19KDPk5/Ic3OpeY67TO7f+yjdgPWE4=
+github.com/rgeraldes24/go-zond v0.0.0-20251114154221-6a5b08a7585f/go.mod h1:Ycwx3lbp3Y1eKmT3lCpo/laSKluRXA+kY0iI/97JZR4=
+github.com/rgeraldes24/qrysm v0.0.0-20251114082638-30da591492df h1:a7DMTAK9EeXB/E1aePq9QJbZi7wVIsD4PLC0Xi+bJMM=
+github.com/rgeraldes24/qrysm v0.0.0-20251114082638-30da591492df/go.mod h1:bNVXySEQCJA/a3w4UQHAqzlprK7SlICfiIb9HX5dL2I=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.4.4 h1:8TfxU8dW6PdqD27gjM8MVNuicgxIjxpm4K7x4jp8sis=
 github.com/rivo/uniseg v0.4.4/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
@@ -577,8 +577,8 @@ github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d h1:vfofYNRScrDd
 github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d/go.mod h1:RRCYJbIwD5jmqPI9XoAFR0OcDxqUctll6zUj/+B4S48=
 github.com/theQRL/go-bitfield v0.0.0-20231204084259-f3b877be8f63 h1:cU1QlEDDZ3zI6uya2Bbz+ldjvy+j6yhTmDtLkipDvz4=
 github.com/theQRL/go-bitfield v0.0.0-20231204084259-f3b877be8f63/go.mod h1:Xm3tb2axH6IT4miFd3hKIeD877Y6aA9Hxf2jOYtfTIk=
-github.com/theQRL/go-qrllib v0.0.0-20230406170304-b7eb19c367e1 h1:YvUxImh18qCxX1rjvYF9wqAAL236s2FqrjzTRqg5Alg=
-github.com/theQRL/go-qrllib v0.0.0-20230406170304-b7eb19c367e1/go.mod h1:IspDEOeIlmm6GujPeTNygL3T72MUluDDyUa20AisjaQ=
+github.com/theQRL/go-qrllib v0.0.0-20251008091143-a411d9a85341 h1:gQ/ERlk4l4fyJtf8V4DOqn2qThTRMSPDVqmqekIwiso=
+github.com/theQRL/go-qrllib v0.0.0-20251008091143-a411d9a85341/go.mod h1:K2QakL8Z3Nrm7fx+SeKYjVrInu0s9WitHHMyUihBkwQ=
 github.com/thomaso-mirodin/intmath v0.0.0-20160323211736-5dc6d854e46e h1:cR8/SYRgyQCt5cNCMniB/ZScMkhI9nk8U5C7SbISXjo=
 github.com/thomaso-mirodin/intmath v0.0.0-20160323211736-5dc6d854e46e/go.mod h1:Tu4lItkATkonrYuvtVjG0/rhy15qrNGNTjPdaphtZ/8=
 github.com/tklauser/go-sysconf v0.3.13 h1:GBUpcahXSpR2xN01jhkNAbTLRk2Yzgggk8IM08lq3r4=

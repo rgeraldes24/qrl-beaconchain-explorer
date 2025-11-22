@@ -80,12 +80,6 @@ HYSTERESIS_QUOTIENT: 4
 SLOTS_PER_EPOCH: 32
 MAX_EFFECTIVE_BALANCE: 32000000000
 
-# Max operations per block
-# ---------------------------------------------------------------
-# 2**4 (= 16)
-MAX_DILITHIUM_TO_EXECUTION_CHANGES: 16
-
-
 # Execution
 # ---------------------------------------------------------------
 # [customized] 2**2 (= 4)

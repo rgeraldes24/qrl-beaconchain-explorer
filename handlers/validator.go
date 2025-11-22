@@ -369,11 +369,6 @@ func Validator(w http.ResponseWriter, r *http.Request) {
 			validatorPageData.EffectiveBalance = vbalance.EffectiveBalance
 		}
 
-		if bytes.Equal(validatorPageData.WithdrawCredentials[:1], []byte{0x01}) {
-			// validators can have 0x01 credentials even before the cappella fork
-			validatorPageData.IsWithdrawableAddress = true
-		}
-
 		// if we are currently past the cappella fork epoch, we can calculate the withdrawal information
 
 		validatorSlice := []uint64{index}
@@ -388,21 +383,10 @@ func Validator(w http.ResponseWriter, r *http.Request) {
 		}
 		lastWithdrawalsEpoch := lastWithdrawalsEpochs[index]
 
-		dilithiumChange, err := db.GetValidatorDilithiumChange(validatorPageData.Index)
-		if err != nil {
-			return fmt.Errorf("error getting validator dilithium change from db: %w", err)
-		}
-		validatorPageData.DilithiumChange = dilithiumChange
-
-		if bytes.Equal(validatorPageData.WithdrawCredentials[:1], []byte{0x00}) && dilithiumChange != nil {
-			// dilithiumChanges are only possible afters cappeala
-			validatorPageData.IsWithdrawableAddress = true
-		}
-
 		// only calculate the expected next withdrawal if the validator is eligible
 		isFullWithdrawal := validatorPageData.CurrentBalance > 0 && validatorPageData.WithdrawableEpoch <= validatorPageData.Epoch
 		isPartialWithdrawal := validatorPageData.EffectiveBalance == utils.Config.Chain.ClConfig.MaxEffectiveBalance && validatorPageData.CurrentBalance > utils.Config.Chain.ClConfig.MaxEffectiveBalance
-		if stats != nil && stats.LatestValidatorWithdrawalIndex != nil && stats.TotalValidatorCount != nil && validatorPageData.IsWithdrawableAddress && (isFullWithdrawal || isPartialWithdrawal) {
+		if stats != nil && stats.LatestValidatorWithdrawalIndex != nil && stats.TotalValidatorCount != nil && (isFullWithdrawal || isPartialWithdrawal) {
 			distance, err := GetWithdrawableCountFromCursor(validatorPageData.Epoch, validatorPageData.Index, *stats.LatestValidatorWithdrawalIndex)
 			if err != nil {
 				return fmt.Errorf("error getting withdrawable validator count from cursor: %w", err)

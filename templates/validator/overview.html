@@ -255,17 +255,9 @@
     </div>
 
     <div class="mx-3">
-      <span id="withdrawalCount" style="cursor: pointer;" data-toggle="tooltip" {{ if .IsWithdrawableAddress }}title="Withdrawals processed for this validator"{{ else }}title="To receive withdrawals, 0x01 withdrawal credentials are required. Click here for more information."{{ end }}>
-        {{ if .IsWithdrawableAddress }}
-          <i class="fas fa-money-bill"></i>
-          {{ .WithdrawalCount }}
-        {{ else }}
-          <a href="{{ if eq config.Chain.Id 100 }}https://docs.gnosischain.com/node/management/withdrawals/#how-to-change-the-withdrawal-credential{{ else }}https://launchpad.ethereum.org/en/withdrawals{{ end }}">
-            <i class="fas fa-money-bill" style="color:var(--body-color)"></i>
-            <i class="text-warning fas fa-exclamation-triangle"></i>
-            <i class="fas fa-external-link-alt"></i>
-          </a>
-        {{ end }}
+      <span id="withdrawalCount" style="cursor: pointer;" data-toggle="tooltip" title="Withdrawals processed for this validator">
+        <i class="fas fa-money-bill"></i>
+        {{ .WithdrawalCount }}
       </span>
     </div>
   </div>

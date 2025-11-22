@@ -89,22 +89,20 @@ type LatestState struct {
 }
 
 type Stats struct {
-	TopDepositors                        *[]StatsTopDepositors
-	InvalidDepositCount                  *uint64 `db:"count"`
-	UniqueValidatorCount                 *uint64 `db:"count"`
-	TotalValidatorCount                  *uint64 `db:"count"`
-	ActiveValidatorCount                 *uint64 `db:"count"`
-	PendingValidatorCount                *uint64 `db:"count"`
-	ValidatorChurnLimit                  *uint64
-	ValidatorActivationChurnLimit        *uint64
-	LatestValidatorWithdrawalIndex       *uint64 `db:"index"`
-	WithdrawableValidatorCount           *uint64 `db:"count"`
-	PendingDilithiumChangeValidatorCount *uint64 `db:"count"`
-	NonWithdrawableCount                 *uint64 `db:"count"`
-	TotalAmountWithdrawn                 *uint64 `db:"amount"`
-	WithdrawalCount                      *uint64 `db:"count"`
-	TotalAmountDeposited                 *uint64 `db:"amount"`
-	DilithiumChangeCount                 *uint64 `db:"count"`
+	TopDepositors                  *[]StatsTopDepositors
+	InvalidDepositCount            *uint64 `db:"count"`
+	UniqueValidatorCount           *uint64 `db:"count"`
+	TotalValidatorCount            *uint64 `db:"count"`
+	ActiveValidatorCount           *uint64 `db:"count"`
+	PendingValidatorCount          *uint64 `db:"count"`
+	ValidatorChurnLimit            *uint64
+	ValidatorActivationChurnLimit  *uint64
+	LatestValidatorWithdrawalIndex *uint64 `db:"index"`
+	WithdrawableValidatorCount     *uint64 `db:"count"`
+	NonWithdrawableCount           *uint64 `db:"count"`
+	TotalAmountWithdrawn           *uint64 `db:"amount"`
+	WithdrawalCount                *uint64 `db:"count"`
+	TotalAmountDeposited           *uint64 `db:"amount"`
 }
 
 type StatsTopDepositors struct {
@@ -348,8 +346,6 @@ type ValidatorPageData struct {
 	CurrentAttestationStreak                 uint64
 	LongestAttestationStreak                 uint64
 	ShowMultipleWithdrawalCredentialsWarning bool
-	DilithiumChange                          *DilithiumChange
-	IsWithdrawableAddress                    bool
 	EstimatedNextWithdrawal                  template.HTML
 	NextWithdrawalRow                        [][]interface{}
 	ValidatorProposalData
@@ -540,7 +536,6 @@ type BlockPageData struct {
 	AttestationsCount         uint64        `db:"attestationscount"`
 	DepositsCount             uint64        `db:"depositscount"`
 	WithdrawalCount           uint64        `db:"withdrawalcount"`
-	DilithiumChangeCount      uint64        `db:"dilithium_change_count"`
 	VoluntaryExitscount       uint64        `db:"voluntaryexitscount"`
 	SlashingsCount            uint64
 	VotesCount                uint64
@@ -1331,15 +1326,6 @@ type BurnPageData struct {
 	BurnRate24h      float64              `json:"burn_rate_24_h"`
 	BlockUtilization float64              `json:"block_utilization"`
 	Emission         float64              `json:"emission"`
-}
-
-type DilithiumChange struct {
-	Slot            uint64 `db:"slot" json:"slot,omitempty"`
-	BlockRoot       []byte `db:"block_rot" json:"blockroot,omitempty"`
-	Validatorindex  uint64 `db:"validatorindex" json:"validatorindex,omitempty"`
-	DilithiumPubkey []byte `db:"pubkey" json:"pubkey,omitempty"`
-	Address         []byte `db:"address" json:"address,omitempty"`
-	Signature       []byte `db:"signature" json:"signature,omitempty"`
 }
 
 type ExplorerConfigurationCategory string

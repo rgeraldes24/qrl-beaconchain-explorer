@@ -18,12 +18,10 @@ const FailedNodeJobStatus NodeJobStatus = "FAILED"                     // job ha
 
 type NodeJobType string
 
-const DilithiumToExecutionChangesNodeJobType NodeJobType = "DILITHIUM_TO_EXECUTION_CHANGES"
 const VoluntaryExitsNodeJobType NodeJobType = "VOLUNTARY_EXITS"
 const UnknownNodeJobType NodeJobType = "UNKNOWN"
 
 var NodeJobTypes = []NodeJobType{
-	DilithiumToExecutionChangesNodeJobType,
 	VoluntaryExitsNodeJobType,
 }
 
@@ -70,21 +68,6 @@ func (nj *NodeJob) ParseData() error {
 		return CreateNodeJobUserError{Message: "data is empty"}
 	}
 	{
-		d := []*capella.SignedDilithiumToExecutionChange{}
-		err := json.Unmarshal(nj.RawData, &d)
-		if err == nil {
-			if nj.Type != "" && nj.Type != UnknownNodeJobType && nj.Type != DilithiumToExecutionChangesNodeJobType {
-				return fmt.Errorf("nodejob.RawData mismatches nodejob.Type (%v)", nj.Type)
-			}
-			// sort.Slice(d, func(i, j int) bool {
-			// 	return d[i].Message.ValidatorIndex < d[j].Message.ValidatorIndex
-			// })
-			nj.Type = DilithiumToExecutionChangesNodeJobType
-			// nj.Data = d
-			return nj.SanitizeRawData()
-		}
-	}
-	{
 		//var d *VoluntaryExitsNodeJobData
 		var d *SignedVoluntaryExit
 		err := json.Unmarshal(nj.RawData, &d)
@@ -108,11 +91,6 @@ func (nj *NodeJob) SanitizeRawData() error {
 	nj.RawData = d
 	return nil
 }
-
-// func (nj NodeJob) GetDilithiumToExecutionChangesNodeJobData() ([]*capella.SignedDilithiumToExecutionChange, bool) {
-// 	d, ok := nj.Data.([]*capella.SignedDilithiumToExecutionChange)
-// 	return d, ok
-// }
 
 func (nj NodeJob) GetVoluntaryExitsNodeJobData() (*SignedVoluntaryExit, bool) {
 	d, ok := nj.Data.(*SignedVoluntaryExit)

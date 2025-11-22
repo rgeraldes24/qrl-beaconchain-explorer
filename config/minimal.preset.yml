@@ -29,12 +29,6 @@ BYTES_PER_LOGS_BLOOM: 256
 # 2**5 (= 32)
 MAX_EXTRA_DATA_BYTES: 32
 
-# Max operations per block
-# ---------------------------------------------------------------
-# 2**4 (= 16)
-MAX_DILITHIUM_TO_EXECUTION_CHANGES: 16
-
-
 # Execution
 # ---------------------------------------------------------------
 # [customized] 2**2 (= 4)

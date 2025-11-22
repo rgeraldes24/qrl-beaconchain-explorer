@@ -102,41 +102,29 @@ type SyncAggregate struct {
 
 // Block is a struct to hold block data
 type Block struct {
-	Status                           uint64
-	Proposer                         uint64
-	BlockRoot                        []byte
-	Slot                             uint64
-	ParentRoot                       []byte
-	StateRoot                        []byte
-	Signature                        []byte
-	RandaoReveal                     []byte
-	Graffiti                         []byte
-	ExecutionData                    *ExecutionData
-	BodyRoot                         []byte
-	ProposerSlashings                []*ProposerSlashing
-	AttesterSlashings                []*AttesterSlashing
-	Attestations                     []*Attestation
-	Deposits                         []*Deposit
-	VoluntaryExits                   []*VoluntaryExit
-	SyncAggregate                    *SyncAggregate
-	ExecutionPayload                 *ExecutionPayload
-	SignedDilithiumToExecutionChange []*SignedDilithiumToExecutionChange
-	AttestationDuties                map[ValidatorIndex][]Slot
-	SyncDuties                       map[ValidatorIndex]bool
-	Finalized                        bool
-	EpochAssignments                 *EpochAssignments
-	Validators                       []*Validator
-}
-
-type SignedDilithiumToExecutionChange struct {
-	Message   DilithiumToExecutionChange
-	Signature []byte
-}
-
-type DilithiumToExecutionChange struct {
-	Validatorindex  uint64
-	DilithiumPubkey []byte
-	Address         []byte
+	Status            uint64
+	Proposer          uint64
+	BlockRoot         []byte
+	Slot              uint64
+	ParentRoot        []byte
+	StateRoot         []byte
+	Signature         []byte
+	RandaoReveal      []byte
+	Graffiti          []byte
+	ExecutionData     *ExecutionData
+	BodyRoot          []byte
+	ProposerSlashings []*ProposerSlashing
+	AttesterSlashings []*AttesterSlashing
+	Attestations      []*Attestation
+	Deposits          []*Deposit
+	VoluntaryExits    []*VoluntaryExit
+	SyncAggregate     *SyncAggregate
+	ExecutionPayload  *ExecutionPayload
+	AttestationDuties map[ValidatorIndex][]Slot
+	SyncDuties        map[ValidatorIndex]bool
+	Finalized         bool
+	EpochAssignments  *EpochAssignments
+	Validators        []*Validator
 }
 
 type Transaction struct {

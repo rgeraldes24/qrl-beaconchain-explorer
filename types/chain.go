@@ -92,5 +92,4 @@ type ClChainConfig struct {
 	MaxExtraDataBytes               uint64 `yaml:"MAX_EXTRA_DATA_BYTES"`
 	MaxWithdrawalsPerPayload        uint64 `yaml:"MAX_WITHDRAWALS_PER_PAYLOAD"`
 	MaxValidatorsPerWithdrawalSweep uint64 `yaml:"MAX_VALIDATORS_PER_WITHDRAWALS_SWEEP"`
-	MaxDilithiumToExecutionChange   uint64 `yaml:"MAX_DILITHIUM_TO_EXECUTION_CHANGES"`
 }
