@@ -7,7 +7,6 @@ x-service: &default-service
     - /tmp/go-cache:/go
     - /tmp/go-build-cache:/root/.cache/go-build
 services:
-  # TODO(now.youtrack.cloud/issue/TZB-2)
   build-once:
     <<: *default-service
     profiles:

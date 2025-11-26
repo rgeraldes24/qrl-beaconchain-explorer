@@ -1376,25 +1376,6 @@ type WithdrawalsPageData struct {
 	WithdrawalChart *ChartsPageDataChart
 }
 
-// TODO(now.youtrack.cloud/issue/TZB-2)
-/*
-type BroadcastPageData struct {
-	Stats        *Stats
-	FlashMessage string
-	CaptchaId    string
-	CsrfField    template.HTML
-	RecaptchaKey string
-}
-
-type BroadcastStatusPageData struct {
-	Job          *NodeJob
-	JobTypeLabel string
-	JobTitle     string
-	JobJson      string
-	Validators   *[]NodeJobValidatorInfo
-}
-*/
-
 type ValidatorIncomePerformance struct {
 	ClIncomePlanck1d    decimal.Decimal `db:"cl_performance_planck_1d"`
 	ClIncomePlanck7d    decimal.Decimal `db:"cl_performance_planck_7d"`

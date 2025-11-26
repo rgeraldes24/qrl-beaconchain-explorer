@@ -40,16 +40,11 @@ type Config struct {
 		Id                    uint64 `yaml:"id" envconfig:"CHAIN_ID"`
 		GenesisTimestamp      uint64 `yaml:"genesisTimestamp" envconfig:"CHAIN_GENESIS_TIMESTAMP"`
 		GenesisValidatorsRoot string `yaml:"genesisValidatorsRoot" envconfig:"CHAIN_GENESIS_VALIDATORS_ROOT"`
-		// TODO(now.youtrack.cloud/issue/TZB-2)
-		// DomainVoluntaryExit              string `yaml:"domainVoluntaryExit" envconfig:"CHAIN_DOMAIN_VOLUNTARY_EXIT"`
-		ClConfigPath string `yaml:"clConfigPath" envconfig:"CHAIN_CL_CONFIG_PATH"`
-		ClConfig     ClChainConfig
-		ElConfig     *params.ChainConfig
+		ClConfigPath          string `yaml:"clConfigPath" envconfig:"CHAIN_CL_CONFIG_PATH"`
+		ClConfig              ClChainConfig
+		ElConfig              *params.ChainConfig
 	} `yaml:"chain"`
-	ELNodeEndpoint string `yaml:"elNodeEndpoint" envconfig:"EL_NODE_ENDPOINT"`
-	// TODO(now.youtrack.cloud/issue/TZB-5)
-	// EtherscanAPIKey           string `yaml:"etherscanApiKey" envconfig:"ETHERSCAN_API_KEY"`
-	// EtherscanAPIBaseURL       string `yaml:"etherscanApiBaseUrl" envconfig:"ETHERSCAN_API_BASEURL"`
+	ELNodeEndpoint            string `yaml:"elNodeEndpoint" envconfig:"EL_NODE_ENDPOINT"`
 	RedisCacheEndpoint        string `yaml:"redisCacheEndpoint" envconfig:"REDIS_CACHE_ENDPOINT"`
 	RedisSessionStoreEndpoint string `yaml:"redisSessionStoreEndpoint" envconfig:"REDIS_SESSION_STORE_ENDPOINT"`
 	TieredCacheProvider       string `yaml:"tieredCacheProvider" envconfig:"CACHE_PROVIDER"`
@@ -128,11 +123,6 @@ type Config struct {
 		Enabled bool   `yaml:"enabled" envconfig:"PPROF_ENABLED"`
 		Port    string `yaml:"port" envconfig:"PPROF_PORT"`
 	} `yaml:"pprof"`
-	// TODO(now.youtrack.cloud/issue/TZB-2)
-	// NodeJobsProcessor struct {
-	// 	ElEndpoint string `yaml:"elEndpoint" envconfig:"NODE_JOBS_PROCESSOR_EL_ENDPOINT"`
-	// 	ClEndpoint string `yaml:"clEndpoint" envconfig:"NODE_JOBS_PROCESSOR_CL_ENDPOINT"`
-	// } `yaml:"nodeJobsProcessor"`
 	Monitoring struct {
 		ServiceMonitoringConfigurations []ServiceMonitoringConfiguration `yaml:"serviceMonitoringConfigurations" envconfig:"SERVICE_MONITORING_CONFIGURATIONS"`
 	} `yaml:"monitoring"`

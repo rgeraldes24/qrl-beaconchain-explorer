@@ -574,21 +574,6 @@ CREATE TABLE IF NOT EXISTS
         enabled bool NOT NULL
     );
 
--- TODO(now.youtrack.cloud/issue/TZB-2)
--- CREATE TABLE IF NOT EXISTS
---     node_jobs (
---         id VARCHAR(40),
---         TYPE VARCHAR(40) NOT NULL,
---         -- can be one of: VOLUNTARY_EXITS
---         status VARCHAR(40) NOT NULL,
---         -- can be one of: PENDING, SUBMITTED_TO_NODE, COMPLETED
---         created_time TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
---         submitted_to_node_time TIMESTAMP WITHOUT TIME ZONE,
---         completed_time TIMESTAMP WITHOUT TIME ZONE,
---         DATA jsonb NOT NULL,
---         PRIMARY KEY (id)
---     );
-
 CREATE TABLE IF NOT EXISTS
     explorer_configurations (
         category VARCHAR(40),

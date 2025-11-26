@@ -197,14 +197,6 @@ func createMenuItems(active string) []types.MainMenuItem {
 							Path:  "/gasnow",
 							Icon:  "fa-gas-pump",
 						},
-						// TODO(now.youtrack.cloud/issue/TZB-2)
-						/*
-							{
-								Label: "Broadcast Signed Messages",
-								Path:  "/tools/broadcast",
-								Icon:  "fa-bullhorn",
-							},
-						*/
 					},
 				}, {
 					Label: "Services",

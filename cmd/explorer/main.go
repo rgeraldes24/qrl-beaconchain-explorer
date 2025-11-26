@@ -305,10 +305,6 @@ func main() {
 	router.HandleFunc("/search/{type}/{search}", handlers.SearchAhead).Methods("GET")
 	router.HandleFunc("/imprint", handlers.Imprint).Methods("GET")
 	router.HandleFunc("/tools/unitConverter", handlers.UnitConverter).Methods("GET")
-	// TODO(now.youtrack.cloud/issue/TZB-2)
-	// router.HandleFunc("/tools/broadcast", handlers.Broadcast).Methods("GET")
-	// router.HandleFunc("/tools/broadcast", handlers.BroadcastPost).Methods("POST")
-	// router.HandleFunc("/tools/broadcast/status/{jobID}", handlers.BroadcastStatus).Methods("GET")
 
 	router.HandleFunc("/tables/{tableId}/state", handlers.GetDataTableStateChanges).Methods("GET")
 	router.HandleFunc("/tables/{tableId}/state", handlers.SetDataTableStateChanges).Methods("PUT")

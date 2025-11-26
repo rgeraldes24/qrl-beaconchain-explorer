@@ -3,10 +3,6 @@
 
 SELECT 'create index for impact level 4 or higher';
 -- +goose StatementBegin
--- TODO(now.youtrack.cloud/issue/TZB-2)
--- CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_node_jobs_type_status ON public.node_jobs USING btree (type, status);
--- +goose StatementEnd
--- +goose StatementBegin
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_validators_activationepoch_status ON public.validators USING btree (activationepoch, status);
 -- +goose StatementEnd
 -- +goose StatementBegin
@@ -84,10 +80,6 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_sync_committees_validatorindex ON pu
 
 -- +goose Down
 SELECT 'drop index for impact level 4 or higher';
--- +goose StatementBegin
--- TODO(now.youtrack.cloud/issue/TZB-2)
--- DROP INDEX CONCURRENTLY idx_node_jobs_type_status;
--- +goose StatementEnd
 -- +goose StatementBegin
 DROP INDEX CONCURRENTLY idx_validators_activationepoch_status;
 -- +goose StatementEnd

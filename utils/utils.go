@@ -38,6 +38,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/skip2/go-qrcode"
 	confusables "github.com/skygeario/go-confusable-homoglyphs"
+	"github.com/theQRL/go-zond/common"
 	"github.com/theQRL/go-zond/common/hexutil"
 	"github.com/theQRL/go-zond/params"
 	"github.com/theQRL/qrysm/beacon-chain/core/signing"
@@ -520,11 +521,6 @@ func ReadConfig(cfg *types.Config, path string) error {
 			return fmt.Errorf("tried to set known genesis-validators-root, but unknown chain-name")
 		}
 	}
-
-	// TODO(now.youtrack.cloud/issue/TZB-2)
-	// if cfg.Chain.DomainVoluntaryExit == "" {
-	// 	cfg.Chain.DomainVoluntaryExit = "0x04000000"
-	// }
 
 	if cfg.Frontend.SiteTitle == "" {
 		cfg.Frontend.SiteTitle = "QRL Explorer"
@@ -1125,4 +1121,9 @@ func GetMaxAllowedDayRangeValidatorStats(validatorAmount int) int {
 	} else {
 		return math.MaxInt
 	}
+}
+
+func FixAddressCasing(add string) string {
+	addr, _ := common.NewAddressFromString(add)
+	return addr.Hex()
 }
