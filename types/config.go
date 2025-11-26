@@ -44,7 +44,10 @@ type Config struct {
 		ClConfig              ClChainConfig
 		ElConfig              *params.ChainConfig
 	} `yaml:"chain"`
-	ELNodeEndpoint            string `yaml:"elNodeEndpoint" envconfig:"EL_NODE_ENDPOINT"`
+	ELNodeEndpoint string `yaml:"elNodeEndpoint" envconfig:"EL_NODE_ENDPOINT"`
+	// TODO(now.youtrack.cloud/issue/TZB-5)
+	// EtherscanAPIKey           string `yaml:"etherscanApiKey" envconfig:"ETHERSCAN_API_KEY"`
+	// EtherscanAPIBaseURL       string `yaml:"etherscanApiBaseUrl" envconfig:"ETHERSCAN_API_BASEURL"`
 	RedisCacheEndpoint        string `yaml:"redisCacheEndpoint" envconfig:"REDIS_CACHE_ENDPOINT"`
 	RedisSessionStoreEndpoint string `yaml:"redisSessionStoreEndpoint" envconfig:"REDIS_SESSION_STORE_ENDPOINT"`
 	TieredCacheProvider       string `yaml:"tieredCacheProvider" envconfig:"CACHE_PROVIDER"`
