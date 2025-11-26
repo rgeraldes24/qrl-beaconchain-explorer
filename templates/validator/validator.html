@@ -191,6 +191,9 @@
               <div class="tab-pane fade h-100" id="depositsTabPanel" role="tabpanel" aria-labelledby="deposits-tab" aria-controls="deposits">
                 <div class="px-3">{{ template "validatorDepositsTable" $ }}</div>
               </div>
+              <div class="tab-pane fade h-100" id="withdrawalsTabPanel" role="tabpanel" aria-labelledby="withdrawal-tab" aria-controls="withdrawals">
+                {{ template "validatorWithdrawalTable" . }}
+              </div>
             </div>
           </div>
         </div>
