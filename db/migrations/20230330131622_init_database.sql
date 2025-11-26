@@ -301,6 +301,8 @@ CREATE TABLE IF NOT EXISTS
 
 CREATE INDEX IF NOT EXISTS idx_blocks_withdrawals_recipient ON blocks_withdrawals (address);
 
+CREATE INDEX IF NOT EXISTS idx_blocks_withdrawals_validatorindex ON blocks_withdrawals (validatorindex);
+
 CREATE TABLE IF NOT EXISTS
     blocks_transactions (
         block_slot INT NOT NULL,
