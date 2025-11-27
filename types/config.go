@@ -219,7 +219,6 @@ type ConfigJsonResponse struct {
 		TargetAggregatorsPerSyncSubcommittee string `json:"TARGET_AGGREGATORS_PER_SYNC_SUBCOMMITTEE"`
 		SyncCommitteeSubnetCount             string `json:"SYNC_COMMITTEE_SUBNET_COUNT"`
 		DomainRandao                         string `json:"DOMAIN_RANDAO"`
-		DomainVoluntaryExit                  string `json:"DOMAIN_VOLUNTARY_EXIT"`
 		DomainSyncCommitteeSelectionProof    string `json:"DOMAIN_SYNC_COMMITTEE_SELECTION_PROOF"`
 		DomainBeaconAttester                 string `json:"DOMAIN_BEACON_ATTESTER"`
 		DomainBeaconProposer                 string `json:"DOMAIN_BEACON_PROPOSER"`
