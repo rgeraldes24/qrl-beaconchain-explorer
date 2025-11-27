@@ -1,4 +1,4 @@
-qrl_module = import_module("github.com/rgeraldes24/qrl-package/main.star@8c6b090e7276dab7711ba3f3a33dff495a1e8aca")
+qrl_module = import_module("github.com/rgeraldes24/qrl-package/main.star@0fae3db896d0256e2ef8ac013992b2db4338e67c")
 
 POSTGRES_PORT_ID = "postgres"
 POSTGRES_DB = "db"

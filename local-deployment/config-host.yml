@@ -3,23 +3,23 @@ chain:
 readerDatabase:
   name: db
   host: 127.0.0.1
-  port: "61717"
+  port: "52069"
   user: postgres
   password: "pass"
 writerDatabase:
   name: db
   host: 127.0.0.1
-  port: "61717"
+  port: "52069"
   user: postgres
   password: "pass"
 bigtable:
   project: explorer
   instance: explorer
   emulator: true
-  emulatorPort: 61713
-elNodeEndpoint: 'http://127.0.0.1:61755'
-redisCacheEndpoint: '127.0.0.1:61714'
-redisSessionStoreEndpoint: '127.0.0.1:61714'
+  emulatorPort: 52070
+elNodeEndpoint: 'http://127.0.0.1:52114'
+redisCacheEndpoint: '127.0.0.1:52071'
+redisSessionStoreEndpoint: '127.0.0.1:52071'
 tieredCacheProvider: 'redis'
 frontend:
   siteDomain: "localhost:8080"
@@ -31,13 +31,13 @@ frontend:
   readerDatabase:
     name: db
     host: 127.0.0.1
-    port: "61717"
+    port: "52069"
     user: postgres
     password: "pass"
   writerDatabase:
     name: db
     host: 127.0.0.1
-    port: "61717"
+    port: "52069"
     user: postgres
     password: "pass"
   sessionSecret: "11111111111111111111111111111111"
@@ -51,6 +51,6 @@ indexer:
   # indexMissingEpochsOnStartup: true # Check for missing epochs and export them after startup
   node:
     host: 127.0.0.1
-    port: '61767'
+    port: '52127'
     type: qrysm
   depositContractFirstBlock: 0
