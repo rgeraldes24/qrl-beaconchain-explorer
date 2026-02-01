@@ -237,8 +237,7 @@ func GetSlotPageData(blockSlot uint64) (*types.BlockPageData, error) {
 			blocks.status,
 			exec_block_number,
 			jsonb_agg(tags.metadata) as tags,
-			COALESCE(validator_names.name, '') AS name,
-			(SELECT count(*) from blocks_dilithium_change where block_slot = $1) as dilithium_change_count
+			COALESCE(validator_names.name, '') AS name
 		FROM blocks 
 		LEFT JOIN validators ON blocks.proposer = validators.validatorindex
 		LEFT JOIN validator_names ON validators.pubkey = validator_names.publickey
@@ -781,46 +780,6 @@ func SlotWithdrawalData(w http.ResponseWriter, r *http.Request) {
 		Draw:         1,
 		RecordsTotal: uint64(len(withdrawals)),
 		Data:         tableData,
-	}
-
-	err = json.NewEncoder(w).Encode(data)
-	if err != nil {
-		logger.Errorf("error encoding json response for %v route: %v", r.URL.String(), err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-}
-
-func SlotDilithiumChangeData(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	vars := mux.Vars(r)
-
-	slot, err := strconv.ParseUint(vars["slot"], 10, 64)
-	if err != nil || slot > math.MaxInt32 {
-		logger.Warnf("error parsing slot url parameter %v: %v", vars["slot"], err)
-		http.Error(w, "Error: Invalid parameter slot.", http.StatusBadRequest)
-		return
-	}
-	dilithiumChange, err := db.GetSlotDilithiumChange(slot)
-	if err != nil {
-		logger.Errorf("error retrieving dilithiumChange data for slot %v, err: %v", slot, err)
-	}
-
-	tableData := make([][]interface{}, 0, len(dilithiumChange))
-	for _, c := range dilithiumChange {
-		tableData = append(tableData, []interface{}{
-			utils.FormatValidator(c.Validatorindex),
-			utils.FormatHashWithCopy(c.Signature),
-			utils.FormatHashWithCopy(c.DilithiumPubkey),
-			utils.FormatAddress(c.Address, nil, "", false, false, true),
-		})
-	}
-
-	data := &types.DataTableResponse{
-		Draw:         1,
-		RecordsTotal: uint64(len(dilithiumChange)),
-		// RecordsFiltered: uint64(len(withdrawals)),
-		Data: tableData,
 	}
 
 	err = json.NewEncoder(w).Encode(data)

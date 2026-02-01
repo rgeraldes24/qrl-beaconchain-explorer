@@ -3,14 +3,7 @@
 
 SELECT 'create index for impact level 4 or higher';
 -- +goose StatementBegin
--- TODO(now.youtrack.cloud/issue/TZB-2)
--- CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_node_jobs_type_status ON public.node_jobs USING btree (type, status);
--- +goose StatementEnd
--- +goose StatementBegin
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_validators_activationepoch_status ON public.validators USING btree (activationepoch, status);
--- +goose StatementEnd
--- +goose StatementBegin
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_blocks_dilithium_change_block_root_validatorindex ON public.blocks_dilithium_change USING btree (block_root, validatorindex);
 -- +goose StatementEnd
 -- +goose StatementBegin
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_execution_deposits_from_address_publickey ON public.execution_deposits USING btree (from_address, publickey);
@@ -88,14 +81,7 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_sync_committees_validatorindex ON pu
 -- +goose Down
 SELECT 'drop index for impact level 4 or higher';
 -- +goose StatementBegin
--- TODO(now.youtrack.cloud/issue/TZB-2)
--- DROP INDEX CONCURRENTLY idx_node_jobs_type_status;
--- +goose StatementEnd
--- +goose StatementBegin
 DROP INDEX CONCURRENTLY idx_validators_activationepoch_status;
--- +goose StatementEnd
--- +goose StatementBegin
-DROP INDEX CONCURRENTLY idx_blocks_dilithium_change_block_root_validatorindex;
 -- +goose StatementEnd
 -- +goose StatementBegin
 DROP INDEX CONCURRENTLY idx_execution_deposits_from_address_publickey;

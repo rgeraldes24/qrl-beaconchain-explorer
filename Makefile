@@ -5,8 +5,6 @@ BUILDDATE=`date -u +"%Y-%m-%dT%H:%M:%S%:z"`
 PACKAGE=github.com/theQRL/qrl-beaconchain-explorer
 LDFLAGS="-X ${PACKAGE}/version.Version=${VERSION} -X ${PACKAGE}/version.BuildDate=${BUILDDATE} -X ${PACKAGE}/version.GitCommit=${GITCOMMIT} -X ${PACKAGE}/version.GitDate=${GITDATE} -s -w"
 
-# TODO(now.youtrack.cloud/issue/TZB-2)
-# all: explorer stats frontend-data-updater el-indexer rewards-exporter node-jobs-processor signatures misc
 all: explorer stats frontend-data-updater el-indexer rewards-exporter signatures misc
 
 lint:
@@ -33,10 +31,6 @@ rewards-exporter:
 
 el-indexer:
 	go build --ldflags=${LDFLAGS} -o bin/el-indexer cmd/el-indexer/main.go
-
-# TODO(now.youtrack.cloud/issue/TZB-2)
-# node-jobs-processor:
-# 	go build --ldflags=${LDFLAGS} -o bin/node-jobs-processor cmd/node-jobs-processor/main.go
 
 signatures:
 	go build --ldflags=${LDFLAGS} -o bin/signatures cmd/signatures/main.go

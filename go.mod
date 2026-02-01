@@ -96,7 +96,7 @@ require (
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/rs/cors v1.8.2 // indirect
-	github.com/theQRL/go-qrllib v0.0.0-20230406170304-b7eb19c367e1 // indirect
+	github.com/theQRL/go-qrllib v0.0.0-20251008091143-a411d9a85341 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	golang.org/x/crypto v0.19.0 // indirect
 	golang.org/x/mod v0.15.0 // indirect
@@ -154,6 +154,6 @@ replace github.com/grpc-ecosystem/grpc-gateway/v2 => github.com/prysmaticlabs/gr
 
 replace github.com/wealdtech/go-merkletree v1.0.1-0.20190605192610-2bb163c2ea2a => github.com/rocket-pool/go-merkletree v1.0.1-0.20220406020931-c262d9b976dd
 
-replace github.com/theQRL/qrysm => github.com/rgeraldes24/qrysm v0.0.0-20250902073130-a7e6444b5b66
+replace github.com/theQRL/qrysm => github.com/rgeraldes24/qrysm v0.0.0-20251114082638-30da591492df
 
-replace github.com/theQRL/go-zond => github.com/rgeraldes24/go-zond v0.0.0-20250901090932-5b28406187a1
+replace github.com/theQRL/go-zond => github.com/rgeraldes24/go-zond v0.0.0-20251114154221-6a5b08a7585f

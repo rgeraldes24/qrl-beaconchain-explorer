@@ -111,13 +111,6 @@ func calculateStats() (*types.Stats, error) {
 
 	stats.WithdrawableValidatorCount = &WithdrawableValidatorCount
 
-	PendingDilithiumChangeValidatorCount, err := db.GetPendingDilithiumChangeValidatorCount()
-	if err != nil {
-		logger.WithError(err).Error("error getting withdrawable validator count")
-	}
-
-	stats.PendingDilithiumChangeValidatorCount = &PendingDilithiumChangeValidatorCount
-
 	TotalAmountWithdrawn, WithdrawalCount, err := db.GetTotalAmountWithdrawn()
 	if err != nil {
 		logger.WithError(err).Error("error getting total amount withdrawn")
@@ -131,13 +124,6 @@ func calculateStats() (*types.Stats, error) {
 	}
 
 	stats.TotalAmountDeposited = &TotalAmountDeposited
-
-	DilithiumChangeCount, err := db.GetDilithiumChangeCount()
-	if err != nil {
-		logger.WithError(err).Error("error getting dilithium change count")
-	}
-
-	stats.DilithiumChangeCount = &DilithiumChangeCount
 
 	return &stats, nil
 }

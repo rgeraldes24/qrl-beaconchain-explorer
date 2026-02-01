@@ -3,12 +3,6 @@
 -- +goose Up
 
 -- +goose StatementBegin
-DROP INDEX CONCURRENTLY IF EXISTS idx_blocks_dilithium_change_pubkey_text;
--- +goose StatementEnd
--- +goose StatementBegin
-ALTER TABLE blocks_dilithium_change DROP COLUMN IF EXISTS pubkey_text;
--- +goose StatementEnd
--- +goose StatementBegin
 DROP INDEX CONCURRENTLY IF EXISTS idx_blocks_withdrawals_search;
 -- +goose StatementEnd
 -- +goose StatementBegin
@@ -28,13 +22,4 @@ ALTER TABLE blocks_withdrawals ADD COLUMN IF NOT EXISTS address_text TEXT NOT NU
 -- +goose StatementEnd
 -- +goose StatementBegin
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_blocks_withdrawals_address_text ON blocks_withdrawals USING gin (address_text gin_trgm_ops);
--- +goose StatementEnd
--- +goose StatementBegin
-ALTER TABLE blocks_dilithium_change ADD COLUMN IF NOT EXISTS pubkey_text TEXT NOT NULL DEFAULT '';
--- +goose StatementEnd
--- +goose StatementBegin
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_blocks_dilithium_change_pubkey_text ON blocks_dilithium_change USING gin (pubkey_text gin_trgm_ops);
--- +goose StatementEnd
--- +goose StatementBegin
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_blocks_dilithium_change_search ON blocks_dilithium_change (validatorindex, block_slot, pubkey_text);
 -- +goose StatementEnd

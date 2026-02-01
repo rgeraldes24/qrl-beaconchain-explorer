@@ -387,18 +387,6 @@
         <p>
           <span>Your current withdrawal credentials are: {{ formatWithdawalCredentials .WithdrawCredentials true }}</span>
         </p>
-        {{ if .DilithiumChange }}
-          <div class="my-3">
-            {{ if gt (epochOfSlot .DilithiumChange.Slot) $.LatestFinalizedEpoch }}
-              <p><b>Pending withdrawal credential: </b><span>{{ formatAddressToWithdrawalCredentials .DilithiumChange.Address true }}</span> waiting for epoch finality.</p>
-              <span>A request to change your withdrawal credentials has been registered and is being finalized. You have requested to change your withdrawal credentials</span>
-            {{ else }}
-              <span>Your withdrawal credential were successfully changed</span>
-            {{ end }}
-            <span>during epoch <span>{{ epochOfSlot .DilithiumChange.Slot | formatEpoch }}</span><span> and slot </span><span class="mr-1">{{ formatBlockSlot .DilithiumChange.Slot }}</span>.</span>
-            The signature included (<span class="mr-1">{{ formatHash .DilithiumChange.Signature true }} <i class="fa fa-copy text-muted p-1" role="button" data-toggle="tooltip" title="Copy to clipboard" data-clipboard-text="{{ formatHash .DilithiumChange.Signature false }}"></i></span>) was signed by your Dilithium private key and can be verified with your Dilithium public key (<span>{{ formatHash .DilithiumChange.DilithiumPubkey true }}</span><i class="fa fa-copy text-muted p-1" role="button" data-toggle="tooltip" title="Copy to clipboard" data-clipboard-text="{{ formatHash .DilithiumChange.DilithiumPubkey false }}"></i>). Payouts will be sent to <span> {{ formatExecutionAddress .DilithiumChange.Address }}</span>.
-          </div>
-        {{ end }}
       {{ end }}
       <h4 class="my-3">Execution Layer</h4>
       <h6 class="">This table displays the deposits made to the QRL staking deposit contract.</h6>

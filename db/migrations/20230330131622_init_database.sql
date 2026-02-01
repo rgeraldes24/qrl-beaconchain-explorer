@@ -304,21 +304,6 @@ CREATE INDEX IF NOT EXISTS idx_blocks_withdrawals_recipient ON blocks_withdrawal
 CREATE INDEX IF NOT EXISTS idx_blocks_withdrawals_validatorindex ON blocks_withdrawals (validatorindex);
 
 CREATE TABLE IF NOT EXISTS
-    blocks_dilithium_change (
-        block_slot INT NOT NULL,
-        block_root bytea NOT NULL,
-        validatorindex INT NOT NULL,
-        signature bytea NOT NULL,
-        pubkey bytea NOT NULL,
-        address bytea NOT NULL,
-        PRIMARY KEY (block_slot, block_root, validatorindex)
-    );
-
-CREATE INDEX IF NOT EXISTS idx_blocks_dilithium_change_pubkey ON blocks_dilithium_change (pubkey);
-
-CREATE INDEX IF NOT EXISTS idx_blocks_dilithium_change_address ON blocks_dilithium_change (address);
-
-CREATE TABLE IF NOT EXISTS
     blocks_transactions (
         block_slot INT NOT NULL,
         block_index INT NOT NULL,
@@ -590,21 +575,6 @@ CREATE TABLE IF NOT EXISTS
         CONTENT TEXT NOT NULL,
         enabled bool NOT NULL
     );
-
--- TODO(now.youtrack.cloud/issue/TZB-2)
--- CREATE TABLE IF NOT EXISTS
---     node_jobs (
---         id VARCHAR(40),
---         TYPE VARCHAR(40) NOT NULL,
---         -- can be one of: DILITHIUM_TO_EXECUTION_CHANGES, VOLUNTARY_EXITS
---         status VARCHAR(40) NOT NULL,
---         -- can be one of: PENDING, SUBMITTED_TO_NODE, COMPLETED
---         created_time TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
---         submitted_to_node_time TIMESTAMP WITHOUT TIME ZONE,
---         completed_time TIMESTAMP WITHOUT TIME ZONE,
---         DATA jsonb NOT NULL,
---         PRIMARY KEY (id)
---     );
 
 CREATE TABLE IF NOT EXISTS
     explorer_configurations (
