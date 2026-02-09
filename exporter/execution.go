@@ -28,7 +28,7 @@ import (
 
 var elLookBack = uint64(100)
 var elMaxFetch = uint64(1000)
-var elDepositEventSignature = hash.HashKeccak256([]byte("DepositEvent(bytes,bytes,bytes,bytes,bytes)"))
+var elDepositEventSignature = hash.Keccak256([]byte("DepositEvent(bytes,bytes,bytes,bytes,bytes)"))
 var depositContractFirstBlock uint64
 var qrlDepositContractAddress common.Address
 var elClient *qrlclient.Client

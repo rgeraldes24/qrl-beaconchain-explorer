@@ -33,8 +33,8 @@ sudo apt install kurtosis-cli
 You will find the last version of Go [on this page](https://go.dev/doc/install). The commands that you will type to install it will look like this:
 
 ```
-wget https://go.dev/dl/go1.24.1.linux-amd64.tar.gz
-sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.24.1.linux-amd64.tar.gz
+wget https://go.dev/dl/go1.25.5.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.25.5.linux-amd64.tar.gz
 ```
 Add the golang binaries to the path by adding the following lines to your _~/.profile_ file and then logout & login again.
 ```
