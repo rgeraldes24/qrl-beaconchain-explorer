@@ -127,10 +127,17 @@ func GetTemplateFuncs() template.FuncMap {
 		"add":                                     func(i, j int) int { return i + j },
 		"addI64":                                  func(i, j int64) int64 { return i + j },
 		"addUI64":                                 func(i, j uint64) uint64 { return i + j },
+		"mulUI64":                                 func(i, j uint64) uint64 { return i * j },
 		"addFloat64":                              func(i, j float64) float64 { return i + j },
 		"addBigInt":                               func(i, j *big.Int) *big.Int { return new(big.Int).Add(i, j) },
 		"mul":                                     func(i, j float64) float64 { return i * j },
 		"div":                                     func(i, j float64) float64 { return i / j },
+		"divUI64": func(i, j uint64) uint64 {
+			if j == 0 {
+				return 0
+			}
+			return i / j
+		},
 		"divInt":                                  func(i, j int) float64 { return float64(i) / float64(j) },
 		"nef":                                     func(i, j float64) bool { return i != j },
 		"gtf":                                     func(i, j float64) bool { return i > j },

@@ -856,8 +856,8 @@
 
 {{ define "content" }}
   {{ with .Data }}
-    {{ $validatorStake := printf "%.0f" (div (config).Chain.ClConfig.MaxEffectiveBalance 1000000000) }}
-    {{ $minNetworkStake := printf "%.0f" (mul (div (config).Chain.ClConfig.MaxEffectiveBalance 1000000000) (config).Chain.ClConfig.MinGenesisActiveValidatorCount) }}
+    {{ $validatorStake := divUI64 (config).Chain.ClConfig.MaxEffectiveBalance 1000000000 }}
+    {{ $minNetworkStake := mulUI64 $validatorStake (config).Chain.ClConfig.MinGenesisActiveValidatorCount }}
     <div class="container mt-2">
       <div class="my-3">
         <div class="d-md-flex py-2 justify-content-md-between">
