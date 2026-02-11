@@ -3,6 +3,16 @@
   <script src="/js/highcharts/annotations.min.js"></script>
   <script src="/js/highcharts/highcharts-global-options.js"></script>
   <script>
+    const CHAIN_CONFIG = {
+      secondsPerSlot: {{ (config).Chain.ClConfig.SecondsPerSlot }},
+      slotsPerEpoch: {{ (config).Chain.ClConfig.SlotsPerEpoch }},
+      minGenesisActiveValidatorCount: {{ (config).Chain.ClConfig.MinGenesisActiveValidatorCount }},
+      maxEffectiveBalance: {{ (config).Chain.ClConfig.MaxEffectiveBalance }},
+      baseRewardFactor: {{ (config).Chain.ClConfig.BaseRewardFactor }},
+      minPerEpochChurnLimit: {{ (config).Chain.ClConfig.MinPerEpochChurnLimit }},
+      churnLimitQuotient: {{ (config).Chain.ClConfig.ChurnLimitQuotient }},
+    }
+
     function formatNumberSpacing(str) {
       var result = ""
       var floor = ""
@@ -44,12 +54,16 @@
 
         this.config = {}
 
-        this.config.secondsPerSlot = 12
-        this.config.slotsPerEpoch = 32
+        this.config.secondsPerSlot = CHAIN_CONFIG.secondsPerSlot
+        this.config.slotsPerEpoch = CHAIN_CONFIG.slotsPerEpoch
         this.config.secondsPerEpoch = this.config.secondsPerSlot * this.config.slotsPerEpoch
         this.config.epochsPerDay = (3600 * 24) / this.config.secondsPerEpoch
-        this.config.minNetworkStake = 40000e9 * 2625
-        this.config.minValidatorStake = 40000e9
+        this.config.minValidatorStake = CHAIN_CONFIG.maxEffectiveBalance
+        this.config.minGenesisActiveValidatorCount = CHAIN_CONFIG.minGenesisActiveValidatorCount
+        this.config.minNetworkStake = this.config.minValidatorStake * this.config.minGenesisActiveValidatorCount
+        this.config.baseRewardFactor = CHAIN_CONFIG.baseRewardFactor
+        this.config.minPerEpochChurnLimit = CHAIN_CONFIG.minPerEpochChurnLimit
+        this.config.churnLimitQuotient = CHAIN_CONFIG.churnLimitQuotient
         this.config.symbols = {
           USD: "$",
           EUR: "€",
@@ -453,8 +467,8 @@
         } else {
           document.getElementById("staking-variable-yourStake-validation").style.display = "none"
         }
-        if (isNaN(p.networkStake) || p.networkStake < 40000 * 2625 * 1e9) {
-          p.networkStake = 40000 * 2625 * 1e9
+        if (isNaN(p.networkStake) || p.networkStake < this.config.minNetworkStake) {
+          p.networkStake = this.config.minNetworkStake
           document.getElementById("staking-variable-totalStake-validation").style.display = "initial"
         } else {
           document.getElementById("staking-variable-totalStake-validation").style.display = "none"
@@ -535,7 +549,7 @@
         this.result.profitDollarChartData = []
         this.result.profitQuantaChartData = []
         this.result.breakEvenPoint = null
-        this.result.numberOfPossibleValidators = Math.floor(this.params.stake / (40000 * 1e9)).toFixed(0) || "0"
+        this.result.numberOfPossibleValidators = Math.floor(this.params.stake / this.config.minValidatorStake).toFixed(0) || "0"
 
         var price = this.params.price
         var costs = this.params.initialCosts //+ this.params.stake * price / 1e9
@@ -549,8 +563,8 @@
         var priceChangePerEpoch = this.params.priceChangePerMonth / epochsPerMonth
         var onlineProbability = this.params.networkOnlineProbability
         var totalStake = this.params.networkStake
-        var valStake = 40000e9
-        var baseRewardFactor = 64
+        var valStake = this.config.minValidatorStake
+        var baseRewardFactor = this.config.baseRewardFactor
         var baseRewardsPerEpoch = 4
         var baseReward = (valStake * baseRewardFactor) / (baseRewardsPerEpoch * Math.sqrt(totalStake))
 
@@ -566,7 +580,7 @@
         // this.fillEarningChartData(now, incomeDollar, costs, price)
 
         for (var i = 0; i < epochsPerYear; i++) {
-          var threshold = Math.max(4, Math.floor(((totalStake / valStake) | 0) / Math.pow(2, 16)))
+          var threshold = Math.max(this.config.minPerEpochChurnLimit, Math.floor(((totalStake / valStake) | 0) / this.config.churnLimitQuotient))
           var maxStakeGrowth = threshold * valStake
 
           var churn = maxStakeGrowth * this.params.totalStakeMonthlyChange
@@ -581,12 +595,12 @@
 
           var ffgRewards = (3 * baseReward * onlineVal * valStake) / totalStake
           var ffgPenalties = 3 * baseReward
-          var propIncentives = ((1 / 8) * baseReward * onlineVal) / 32
+          var propIncentives = ((1 / 8) * baseReward * onlineVal) / this.config.slotsPerEpoch
           var attIncentives = ((7 / 8) * baseReward * 1) / 1
 
           var totalRewards = 0
           totalRewards += ffgRewards * onlineVal
-          totalRewards += propIncentives * 32
+          totalRewards += propIncentives * this.config.slotsPerEpoch
           totalRewards += attIncentives * onlineVal
           totalRewards -= ffgPenalties * offlineVal
           var valRewards = totalRewards / allVal
@@ -603,7 +617,7 @@
           costs += costsPerEpoch
           var day = ((i + 1) / epochsPerDay) | 0
           if (day > this.result.incomeDollarChartData.length - 1) {
-            var t = now + (i + 1) * 12 * 32 * 1000
+            var t = now + (i + 1) * this.config.secondsPerEpoch * 1000
             this.fillChartData(t, (incomeShor * price) / 1e9, costs, price)
             this.result.networkIssuanceChartData.push([t, (100 * incomeAll) / totalStake])
           }
@@ -842,6 +856,8 @@
 
 {{ define "content" }}
   {{ with .Data }}
+    {{ $validatorStake := printf "%.0f" (div (config).Chain.ClConfig.MaxEffectiveBalance 1000000000) }}
+    {{ $minNetworkStake := printf "%.0f" (mul (div (config).Chain.ClConfig.MaxEffectiveBalance 1000000000) (config).Chain.ClConfig.MinGenesisActiveValidatorCount) }}
     <div class="container mt-2">
       <div class="my-3">
         <div class="d-md-flex py-2 justify-content-md-between">
@@ -858,10 +874,10 @@
       <div class="row my-3">
         <div class="col-xl-4 col-md-5 col-sm-12 py-3 variables">
           <div class="stake">
-            <h5 class="mb-0">Your Quanta Stake <span id="yourStake-currency"></span> <i class="fas fa-info-circle fa-sm" data-toggle="tooltip" title="This value represents the amount of Quanta you want to use for staking. If you are not staking on a pool it must be a multiple of 40000, since validators can only join the network with a minimum of 40000 Quanta."></i></h5>
+            <h5 class="mb-0">Your Quanta Stake <span id="yourStake-currency"></span> <i class="fas fa-info-circle fa-sm" data-toggle="tooltip" title="This value represents the amount of Quanta you want to use for staking. If you are not staking on a pool it must be a multiple of {{ $validatorStake }}, since validators can only join the network with a minimum of {{ $validatorStake }} Quanta."></i></h5>
             <div class="justify-content-between d-flex p-3 pb-0 align-content-center">
-              <input id="staking-variable-yourStake" class="staking-variable form-control col-6" type="text" value="40000" />
-              <h5 class="mb-0 mt-1" id="validator-count col-6"><span id="validator-count">0</span> <i class="fas fa-info-circle fa-sm" data-toggle="tooltip" title="The total number of validators that can be added to the network with your stake. A minimum of 40000 Quanta is needed for a validator to participate in the network. Ignore this value when you are staking over a pool."></i></h5>
+              <input id="staking-variable-yourStake" class="staking-variable form-control col-6" type="text" value="{{ $validatorStake }}" />
+              <h5 class="mb-0 mt-1" id="validator-count col-6"><span id="validator-count">0</span> <i class="fas fa-info-circle fa-sm" data-toggle="tooltip" title="The total number of validators that can be added to the network with your stake. A minimum of {{ $validatorStake }} Quanta is needed for a validator to participate in the network. Ignore this value when you are staking over a pool."></i></h5>
             </div>
             <div class="p-3 pt-0">
               <span id="staking-variable-yourStake-validation" class="input-validation">Your quanta stake must be greater than 0</span>
@@ -951,7 +967,7 @@
                     </div>
                     <input id="staking-variable-totalStake" class="staking-variable form-control" type="text" value="{{ .TotalStaked }}" />
                     <input id="staking-variable-totalStake-slider" class="form-control" type="range" value="1100000" min="0" max="100e6" />
-                    <span id="staking-variable-totalStake-validation" class="input-validation">Total stake must be greater or equal to 105000000 (minimum stake required)</span>
+                    <span id="staking-variable-totalStake-validation" class="input-validation">Total stake must be greater or equal to {{ $minNetworkStake }} (minimum stake required)</span>
                   </div>
                   <div class="setting">
                     <h6>Churn rate % <i class="fas fa-info-circle fa-sm" data-toggle="tooltip" title="The churn rate indicates how many validators join or leave the network. A positive value would indicate a net increase in the number of staking validators."></i></h6>
